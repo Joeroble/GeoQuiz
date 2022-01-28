@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical">
-
+<!-- TextView established that will display the questions-->
     <TextView
         android:id="@+id/question_text_view"
         android:layout_width="wrap_content"
@@ -18,7 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-
+<!--True and false buttons that will be used to determine if the the user selected the right answer
+per the question given.-->
         <Button
             android:id="@+id/true_button"
             android:layout_width="wrap_content"
@@ -31,7 +32,7 @@
             android:text="@string/false_button"/>
 
     </LinearLayout>
-
+<!--Next button that will move to the next question-->
          <Button
             android:id="@+id/next_button"
             android:layout_width="wrap_content"
