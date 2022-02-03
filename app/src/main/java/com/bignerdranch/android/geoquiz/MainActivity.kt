@@ -2,11 +2,18 @@ package com.bignerdranch.android.geoquiz
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+
+private const val TAG = "MainActivity"
+private const val KEY_INDEX = "index"
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,21 +24,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: Button
     private lateinit var questionTextView: TextView
 
-    // listOf containing various questions and their true/false answers.
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true))
-
-    // variable for the currentIndex that will be used to select a question from the list
-    private var currentIndex= 0
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProviders.of(this).get(QuizViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG,"OnCreate(Bundle?) called")
         setContentView(R.layout.activity_main)
+
+        val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
+        quizViewModel.currentIndex = currentIndex
 
         // establishes the buttons and textviews by linking them with the corresponding entities
         // in activity_main.xml
@@ -55,17 +58,52 @@ class MainActivity : AppCompatActivity() {
         // sets up nextButton that will move to the next question, increases the currentIndex, and
         // calls upon updateQuestion.
         nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
            updateQuestion()
         }
         //Updates the question for the initial load.
         updateQuestion()
     }
+
+    override fun onStart(){
+        super.onStart()
+        Log.d(TAG,"onStart() called")
+    }
+
+    override fun onResume(){
+        super.onResume()
+        Log.d(TAG, "onResume() called")
+    }
+
+    override fun onPause(){
+        super.onPause()
+        Log.d(TAG, "onPause() called")
+    }
+
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        Log.i(TAG, "onSaveInstanceState")
+        savedInstanceState.putInt(KEY_INDEX, quizViewModel.currentIndex)
+
+    }
+
+    override fun onStop(){
+        super.onStop()
+        Log.d(TAG, "onStop() called")
+    }
+
+    override fun onDestroy(){
+        super.onDestroy()
+        Log.d(TAG, "onDestroy() called")
+    }
+
+
+
     // Creates the updateQuestion function where using currentIndex to get a question from the questionBank
     // and storing it in questionTextResID, which then sets the questionTextView to the string stored
     // in questionTextResId
     private fun updateQuestion(){
-        val questionTextResId = questionBank[currentIndex].textResID
+        val  questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
     }
 
@@ -74,7 +112,7 @@ class MainActivity : AppCompatActivity() {
     // variable, it will set messageResId to correct or incorrect based on the result of the if/else
     // statement.  It will then be used in the Toast to display to the user.
     private fun checkAnswer(userAnswer: Boolean){
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
 
         val messageResId = if (userAnswer == correctAnswer){
             R.string.correct_toast
