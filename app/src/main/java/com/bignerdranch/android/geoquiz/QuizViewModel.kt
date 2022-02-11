@@ -18,6 +18,7 @@ class QuizViewModel : ViewModel() {
 
     // variable for the currentIndex that will be used to select a question from the list
     var currentIndex= 0
+    var isCheater = false
 
     val currentQuestionAnswer: Boolean
     get() = questionBank[currentIndex].answer
