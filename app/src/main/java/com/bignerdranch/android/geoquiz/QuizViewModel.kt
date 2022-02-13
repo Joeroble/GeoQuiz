@@ -18,6 +18,8 @@ class QuizViewModel : ViewModel() {
 
     // variable for the currentIndex that will be used to select a question from the list
     var currentIndex= 0
+
+    // isCheater value used to store the result if the user clicks show answer on the cheat activity.
     var isCheater = false
 
     val currentQuestionAnswer: Boolean
