@@ -95,11 +95,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode:Int, data: Intent?){
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode != Activity.RESULT_OK){
-            return
-        }
+
         if(requestCode == REQUEST_CODE_CHEAT){
-            data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+
+            if(resultCode != Activity.RESULT_OK){
+                quizViewModel.isCheater = false  // Do you need to reset this here?
+                return
+            }
+            else {
+                // read the data from the intent, store in view model
+                val cheated = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+                quizViewModel.isCheater = cheated
+            }
         }
     }
 
